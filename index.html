@@ -2,89 +2,106 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>RAG Simulator</title>
+<title>Understanding RAG - Simulation</title>
 
 <style>
 
 body{
-font-family: Arial, sans-serif;
-background: linear-gradient(135deg,#0f172a,#1e293b);
-color:white;
+font-family: system-ui;
 margin:0;
-padding:20px;
-}
-
-h1{
-text-align:center;
-margin-bottom:30px;
+background:#0f172a;
+color:#e2e8f0;
+line-height:1.7;
 }
 
 .container{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:20px;
+max-width:900px;
+margin:auto;
+padding:40px 20px;
+}
+
+h1{
+font-size:44px;
+margin-bottom:10px;
+}
+
+h2{
+margin-top:50px;
+color:#38bdf8;
+}
+
+p{
+font-size:18px;
+}
+
+.hero{
+text-align:center;
+margin-bottom:60px;
 }
 
 .card{
 background:#1e293b;
-border-radius:12px;
-padding:16px;
-box-shadow:0 4px 20px rgba(0,0,0,0.3);
+padding:25px;
+border-radius:10px;
+margin-top:20px;
 }
 
-.card h2{
-font-size:18px;
-margin-bottom:10px;
-color:#38bdf8;
+.pipeline{
+display:flex;
+justify-content:space-between;
+margin-top:30px;
+flex-wrap:wrap;
 }
 
-textarea,input{
-width:100%;
-padding:8px;
-border-radius:6px;
-border:none;
-margin-top:6px;
-margin-bottom:10px;
-}
-
-button{
-background:#38bdf8;
-border:none;
-padding:8px 12px;
-border-radius:6px;
+.step{
+background:#1e293b;
+padding:15px;
+border-radius:10px;
+width:150px;
+text-align:center;
 cursor:pointer;
-font-weight:bold;
+transition:0.3s;
 }
 
-button:hover{
-background:#0ea5e9;
-}
-
-.output{
-background:#0f172a;
-padding:10px;
-border-radius:8px;
-min-height:60px;
-font-size:14px;
-white-space:pre-wrap;
-}
-
-.chunk{
+.step:hover{
+transform:scale(1.05);
 background:#334155;
-padding:6px;
-margin:4px 0;
-border-radius:6px;
 }
 
-.vector{
-color:#22c55e;
-font-size:12px;
+.step.active{
+background:#38bdf8;
+color:black;
 }
 
-.answer{
-background:#065f46;
-padding:10px;
-border-radius:8px;
+.explanation{
+margin-top:25px;
+background:#020617;
+padding:20px;
+border-radius:10px;
+min-height:80px;
+}
+
+.vectorBox{
+background:#020617;
+padding:20px;
+border-radius:10px;
+margin-top:15px;
+font-family:monospace;
+}
+
+.code{
+background:#020617;
+padding:20px;
+border-radius:10px;
+margin-top:15px;
+font-family:monospace;
+overflow:auto;
+}
+
+footer{
+margin-top:80px;
+text-align:center;
+opacity:.6;
 }
 
 </style>
@@ -92,160 +109,218 @@ border-radius:8px;
 
 <body>
 
-<h1>RAG Pipeline Simulator</h1>
-
 <div class="container">
 
-<div class="card">
-<h2>1️⃣ Knowledge Base</h2>
+<div class="hero">
 
-<textarea id="documents" rows="6" placeholder="Add documents here...
-Example:
-Pizza is an Italian dish made with cheese.
-Biryani is a famous Indian rice dish.
-Sushi is a Japanese seafood dish."></textarea>
+<h1>Understanding RAG</h1>
+<p>Retrieval Augmented Generation explained visually</p>
 
-<button onclick="processDocs()">Process Documents</button>
-
-<div id="docOutput" class="output"></div>
 </div>
 
 
+<h2>What is RAG?</h2>
+
 <div class="card">
-<h2>2️⃣ Chunking</h2>
-<div id="chunkOutput" class="output"></div>
+
+<p>
+
+Retrieval Augmented Generation (RAG) is a technique that allows Large Language Models to answer questions using external knowledge instead of relying only on what they were trained on.
+
+</p>
+
+<p>
+
+Instead of asking the LLM directly, we first retrieve relevant documents from a knowledge base and include them in the prompt.
+
+</p>
+
 </div>
 
 
-<div class="card">
-<h2>3️⃣ Embeddings (Vector DB)</h2>
-<div id="vectorOutput" class="output"></div>
+<h2>The RAG Pipeline</h2>
+
+<p>Click each step to understand what happens.</p>
+
+<div class="pipeline">
+
+<div class="step" onclick="showStep(0)">Documents</div>
+<div class="step" onclick="showStep(1)">Chunking</div>
+<div class="step" onclick="showStep(2)">Embeddings</div>
+<div class="step" onclick="showStep(3)">Vector Search</div>
+<div class="step" onclick="showStep(4)">Prompt</div>
+<div class="step" onclick="showStep(5)">LLM Answer</div>
+
+</div>
+
+<div class="explanation" id="explanation">
+
+Click a step above to explore the pipeline.
+
 </div>
 
 
+<h2>How Embeddings Work</h2>
+
 <div class="card">
-<h2>4️⃣ Ask a Question</h2>
 
-<input id="query" placeholder="Ask something...">
+<p>
+Embeddings convert text into vectors (lists of numbers) so machines can measure semantic similarity.
+</p>
 
-<button onclick="runQuery()">Search</button>
+<div class="vectorBox">
 
-<div id="queryVector" class="output"></div>
+Pizza → [0.12, 0.91, 0.44, 0.33]
+
+Biryani → [0.11, 0.88, 0.41, 0.36]
+
+Car → [0.82, 0.05, 0.11, 0.22]
+
+</div>
+
+<p>
+Pizza and Biryani vectors are closer, so the system knows they are similar concepts (food).
+</p>
+
 </div>
 
 
+<h2>Example Query Flow</h2>
+
 <div class="card">
-<h2>5️⃣ Similarity Search</h2>
-<div id="searchOutput" class="output"></div>
+
+<p>User question:</p>
+
+<div class="vectorBox">
+"What food is famous in Japan?"
+</div>
+
+<p>Vector search retrieves:</p>
+
+<div class="vectorBox">
+Sushi is a Japanese seafood dish.
+</div>
+
+<p>The LLM then receives this prompt:</p>
+
+<div class="code">
+
+Context:
+Sushi is a Japanese seafood dish.
+
+Question:
+What food is famous in Japan?
+
+Answer using the context above.
+
+</div>
+
 </div>
 
 
+<h2>Typical RAG Code Architecture</h2>
+
 <div class="card">
-<h2>6️⃣ Retrieved Context + LLM</h2>
-<div id="answerOutput" class="output answer"></div>
+
+<div class="code">
+
+# 1. Load documents
+docs = load_documents()
+
+# 2. Split into chunks
+chunks = chunk(docs)
+
+# 3. Create embeddings
+vectors = embed(chunks)
+
+# 4. Store in vector database
+vector_db.store(vectors)
+
+# 5. Embed user query
+query_vector = embed(query)
+
+# 6. Retrieve relevant chunks
+context = vector_db.search(query_vector)
+
+# 7. Send to LLM
+response = llm(prompt(context, query))
+
 </div>
 
+</div>
+
+
+<h2>Why RAG is Powerful</h2>
+
+<div class="card">
+
+<p>
+
+RAG solves several problems with LLMs:
+
+</p>
+
+<ul>
+
+<li>Reduces hallucinations</li>
+
+<li>Allows real-time knowledge</li>
+
+<li>Works with private company data</li>
+
+<li>Improves factual accuracy</li>
+
+</ul>
+
+</div>
+
+
+<footer>
+
+Built as an interactive blog to understand Retrieval Augmented Generation
+
+</footer>
 
 </div>
 
 
 <script>
 
-let chunks=[]
-let vectors=[]
+const steps=[
+`
+<b>Documents</b><br><br>
+Your knowledge base.
+Examples: PDFs, websites, product docs, company databases.
+`,
+`
+<b>Chunking</b><br><br>
+Large documents are split into smaller pieces so they can be searched efficiently.
+`,
+`
+<b>Embeddings</b><br><br>
+Each chunk is converted into a vector (numbers representing meaning).
+`,
+`
+<b>Vector Search</b><br><br>
+When a user asks a question, the system finds the most similar chunks using cosine similarity.
+`,
+`
+<b>Prompt Construction</b><br><br>
+The retrieved chunks are inserted into the LLM prompt as context.
+`,
+`
+<b>LLM Generation</b><br><br>
+The model generates an answer grounded in the retrieved context.
+`
+]
 
-function randomVector(){
-return Array.from({length:5},()=>Math.random().toFixed(2))
-}
+function showStep(i){
 
-function processDocs(){
+document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"))
 
-let text=document.getElementById("documents").value
-let docs=text.split("\n").filter(d=>d.trim()!="")
+document.querySelectorAll(".step")[i].classList.add("active")
 
-document.getElementById("docOutput").innerText=
-docs.map((d,i)=>`Doc ${i+1}: ${d}`).join("\n")
-
-chunks=[]
-docs.forEach(d=>{
-let words=d.split(" ")
-for(let i=0;i<words.length;i+=5){
-chunks.push(words.slice(i,i+5).join(" "))
-}
-})
-
-document.getElementById("chunkOutput").innerHTML=
-chunks.map(c=>`<div class="chunk">${c}</div>`).join("")
-
-vectors=[]
-chunks.forEach(c=>{
-vectors.push({text:c,vector:randomVector()})
-})
-
-document.getElementById("vectorOutput").innerHTML=
-vectors.map(v=>`
-<div class="chunk">
-${v.text}
-<div class="vector">[${v.vector.join(", ")}]</div>
-</div>
-`).join("")
-
-}
-
-
-function similarity(a,b){
-
-let score=0
-for(let i=0;i<a.length;i++){
-score+=Math.abs(a[i]-b[i])
-}
-
-return 1/(1+score)
-}
-
-
-function runQuery(){
-
-let query=document.getElementById("query").value
-
-let qVector=randomVector()
-
-document.getElementById("queryVector").innerText=
-`Query: ${query}
-
-Vector: [${qVector.join(", ")}]`
-
-let scores=vectors.map(v=>{
-return{
-text:v.text,
-score:similarity(qVector,v.vector)
-}
-})
-
-scores.sort((a,b)=>b.score-a.score)
-
-let top=scores.slice(0,2)
-
-document.getElementById("searchOutput").innerHTML=
-top.map(s=>`
-<div class="chunk">
-${s.text}
-<br>
-Score: ${s.score.toFixed(2)}
-</div>
-`).join("")
-
-let context=top.map(t=>t.text).join(" ")
-
-let answer=`Based on retrieved context:
-
-"${context}"
-
-Simulated LLM Answer:
-Your question was "${query}". 
-The system retrieved the most relevant chunks above and used them as context for the answer.`
-
-document.getElementById("answerOutput").innerText=answer
+document.getElementById("explanation").innerHTML=steps[i]
 
 }
 
